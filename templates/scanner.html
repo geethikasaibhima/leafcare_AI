@@ -82,6 +82,9 @@
           <div class="tab-pane fade" id="camera-pane" role="tabpanel">
             <div class="text-center">
               
+              <!-- Hidden native mobile/device camera file input fallback -->
+              <input type="file" id="camera-direct-input" accept="image/*" capture="environment" class="d-none">
+
               <!-- Video Viewport -->
               <div class="camera-viewport mb-3 d-none position-relative" id="camera-container">
                 <video id="camera-video" playsinline autoplay muted></video>
@@ -94,11 +97,28 @@
                 <div class="scanner-icon-bubble">
                   <i class="fa-solid fa-camera"></i>
                 </div>
-                <h5 class="fw-bold mb-1">Live Mobile / Webcam Scanner</h5>
+                <h5 class="fw-bold mb-1">Live Mobile & Webcam Scanner</h5>
                 <p class="text-muted small mb-3">Point your camera directly at the plant leaf for live capture.</p>
-                <button type="button" class="btn btn-botanical" id="start-camera-btn">
-                  <i class="fa-solid fa-video me-1"></i> Enable Camera
-                </button>
+                
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                  <button type="button" class="btn btn-botanical" id="start-camera-btn">
+                    <i class="fa-solid fa-video me-1"></i> Start Live Webcam Feed
+                  </button>
+                  <button type="button" class="btn btn-botanical-outline" id="direct-camera-btn">
+                    <i class="fa-solid fa-camera-retro me-1"></i> Snap Photo with Device Camera
+                  </button>
+                </div>
+                
+                <div id="camera-insecure-hint" class="d-none mt-3 p-3 bg-white rounded-3 border mx-auto text-start" style="max-width: 500px;">
+                  <div class="d-flex gap-2">
+                    <i class="fa-solid fa-circle-info text-success fs-5"></i>
+                    <div class="small text-muted">
+                      <strong class="text-dark d-block">Camera Context Tip:</strong>
+                      Browsers allow live webcam streaming on <code>http://localhost:5000</code>, <code>http://127.0.0.1:5000</code>, or HTTPS.
+                      When testing over a local Wi-Fi IP, use <strong>"Snap Photo with Device Camera"</strong> above.
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Camera Controls -->

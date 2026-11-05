@@ -1,7 +1,7 @@
-/* LeafCare AI - Scanner Engine (Upload & Live Webcam Stream) */
+/* LeafCare AI - Scanner Engine (Upload, Live Webcam Stream & Mobile Native Camera) */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements
+  // Upload elements
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('file-input');
   const dropzonePrompt = document.getElementById('dropzone-prompt');
@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const cameraPlaceholder = document.getElementById('camera-placeholder');
   const cameraControls = document.getElementById('camera-controls');
   const startCameraBtn = document.getElementById('start-camera-btn');
+  const directCameraBtn = document.getElementById('direct-camera-btn');
+  const cameraDirectInput = document.getElementById('camera-direct-input');
+  const cameraInsecureHint = document.getElementById('camera-insecure-hint');
   const stopCameraBtn = document.getElementById('stop-camera-btn');
   const captureBtn = document.getElementById('capture-btn');
   const switchCameraBtn = document.getElementById('switch-camera-btn');
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------------- Error Display Helper ---------------- //
   function showError(msg) {
     if (errorAlert && errorMsg) {
-      errorMsg.textContent = msg;
+      errorMsg.innerHTML = msg;
       errorAlert.classList.remove('d-none');
       errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
@@ -61,12 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         progressBar.style.width = '55%';
         scanningText.textContent = 'Extracting botanical features & veination...';
-      }, 600);
+      }, 500);
 
       setTimeout(() => {
         progressBar.style.width = '85%';
         scanningText.textContent = 'MobileNetV2 neural inference across 38 classes...';
-      }, 1300);
+      }, 1100);
     }
   }
 
@@ -78,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------------- File Upload & Drag/Drop ---------------- //
   if (dropzone && fileInput) {
-    // Drag events
     ['dragenter', 'dragover'].forEach(eventName => {
       dropzone.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -116,12 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleFileSelect(file) {
     hideError();
-    // Validate image mime type
     if (!file.type.match('image.*')) {
       showError('Please select a valid image file (PNG, JPG, JPEG, WEBP).');
       return;
     }
-    // Size limit 16MB
     if (file.size > 16 * 1024 * 1024) {
       showError('File size exceeds 16MB limit.');
       return;
@@ -158,11 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    await submitImageFile(currentFile);
+  });
+
+  async function submitImageFile(file) {
     hideError();
     showScanningOverlay('upload');
 
     const formData = new FormData();
-    formData.append('image', currentFile);
+    formData.append('image', file);
 
     try {
       const response = await fetch('/predict', {
@@ -185,11 +189,67 @@ document.addEventListener('DOMContentLoaded', () => {
       hideScanningOverlay();
       showError(`Network or server error: ${err.message}`);
     }
+  }
+
+  // ---------------- Camera Safe Detection ---------------- //
+  function getMediaDevices() {
+    if (typeof navigator !== 'undefined') {
+      if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+        return navigator.mediaDevices;
+      }
+      // Check legacy prefixed implementations
+      const legacyGetUserMedia = navigator.getUserMedia || 
+                                 navigator.webkitGetUserMedia || 
+                                 navigator.mozGetUserMedia || 
+                                 navigator.msGetUserMedia;
+      if (legacyGetUserMedia) {
+        return {
+          getUserMedia: function(constraints) {
+            return new Promise((resolve, reject) => {
+              legacyGetUserMedia.call(navigator, constraints, resolve, reject);
+            });
+          }
+        };
+      }
+    }
+    return null;
+  }
+
+  // Direct Device / Mobile Camera input button
+  directCameraBtn?.addEventListener('click', () => {
+    cameraDirectInput?.click();
   });
 
-  // ---------------- Camera Controls ---------------- //
+  cameraDirectInput?.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      submitImageFile(e.target.files[0]);
+    }
+  });
+
+  // ---------------- Live Camera Stream Controls ---------------- //
   async function startCamera() {
     hideError();
+
+    const mediaDevices = getMediaDevices();
+
+    // If mediaDevices is undefined (e.g., accessed over insecure HTTP IP address)
+    if (!mediaDevices) {
+      if (cameraInsecureHint) {
+        cameraInsecureHint.classList.remove('d-none');
+      }
+      
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      let guidance = `Live webcam streaming requires a <strong>Secure Context</strong> (<code>http://localhost:5000</code> or <code>https://</code>).`;
+      if (!isLocalhost) {
+        guidance += `<br>Since you accessed via <code>${window.location.host}</code>, browsers protect your camera. Please use <strong>"Snap Photo with Device Camera"</strong> below, or open <a href="http://localhost:5000/scanner" class="alert-link">http://localhost:5000/scanner</a> on this device.`;
+      }
+      showError(guidance);
+
+      // Trigger the native device camera dialog immediately as fallback
+      cameraDirectInput?.click();
+      return;
+    }
+
     try {
       if (currentStream) {
         stopCamera();
@@ -204,14 +264,22 @@ document.addEventListener('DOMContentLoaded', () => {
         audio: false
       };
 
-      currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+      currentStream = await mediaDevices.getUserMedia(constraints);
       cameraVideo.srcObject = currentStream;
       
       cameraPlaceholder.classList.add('d-none');
       cameraContainer.classList.remove('d-none');
       cameraControls.classList.remove('d-none');
     } catch (err) {
-      showError(`Camera access could not be initialized: ${err.message}. Please allow camera permissions or use file upload.`);
+      console.warn("Webcam error:", err);
+      let errMsg = `Could not start webcam (${err.name || err.message}).`;
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errMsg = `Camera permission was denied. Please grant camera permissions in your browser bar, or tap <strong>"Snap Photo with Device Camera"</strong>.`;
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        errMsg = `No webcam detected on this device. You can snap a photo with your device camera or upload a file.`;
+      }
+      showError(errMsg);
+      cameraInsecureHint?.classList.remove('d-none');
     }
   }
 
@@ -233,26 +301,22 @@ document.addEventListener('DOMContentLoaded', () => {
     startCamera();
   });
 
-  // Capture frame from video stream
+  // Capture frame from live video stream
   captureBtn?.addEventListener('click', async () => {
     if (!currentStream || !cameraVideo.videoWidth) {
       showError('Camera is not ready yet.');
       return;
     }
 
-    // Set canvas dimensions matching video
     cameraCanvas.width = cameraVideo.videoWidth;
     cameraCanvas.height = cameraVideo.videoHeight;
     const ctx = cameraCanvas.getContext('2d');
 
-    // Draw un-mirrored frame
     ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
     const base64Data = cameraCanvas.toDataURL('image/jpeg', 0.92);
 
-    // Stop camera stream
     stopCamera();
 
-    // Send frame to server
     hideError();
     showScanningOverlay('camera');
 
@@ -282,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Cleanup on tab switch
+  // Tab switch cleanup
   document.getElementById('upload-tab')?.addEventListener('click', () => {
     stopCamera();
     hideError();
