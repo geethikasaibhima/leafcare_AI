@@ -3,7 +3,18 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org)
 
 
+> 🚀 **Live Production Application:** [https://leafcare-ai-chvf.onrender.com/](https://leafcare-ai-chvf.onrender.com/)
+>
 > **LeafCare AI** is a full-stack Computer Vision web application for automatic detection and classification of crop foliage diseases. Combining **OpenCV image preprocessing** and a **MobileNetV2 Deep Convolutional Neural Network**, it supports both file uploads and live camera streaming to diagnose 38 crop pathology conditions across 14 plant species with immediate organic and chemical remedy recommendations.
+
+---
+
+## 🌐 Live Web Application
+
+- **Live URL:** [https://leafcare-ai-chvf.onrender.com/](https://leafcare-ai-chvf.onrender.com/)
+- **Demo Credentials:**
+  - **Username:** `demo`
+  - **Password:** `demo123`
 
 ---
 
@@ -12,6 +23,7 @@
 - **🎯 Dual-Mode AI Scanner:**
   - **File Upload:** Drag-and-drop or browse high-resolution images (`.jpg`, `.png`, `.webp`, `.bmp`).
   - **Live Camera Stream:** Mobile and laptop camera capture with HTML5 `getUserMedia`, camera flip controls (front/rear), and real-time viewfinder reticle.
+  - **Direct Device Camera Fallback:** Native HTML5 mobile camera capture (`capture="environment"`) supporting all smartphones over any connection.
 - **🧠 MobileNetV2 Deep Learning Backbone:**
   - Pretrained on ImageNet and fine-tuned on the canonical **PlantVillage** dataset.
   - Multi-class probabilistic softmax classification across **38 classes**.
@@ -49,8 +61,8 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/LeafCare-AI.git
-cd LeafCare-AI
+git clone https://github.com/geethikasaibhima/leafcare_AI.git
+cd leafcare_AI
 ```
 
 ### 2. Create and Activate Virtual Environment
@@ -73,7 +85,7 @@ pip install -r requirements.txt
 ```bash
 python app.py
 ```
-Open your browser at **`http://127.0.0.1:5000`**.
+Open your browser at **`http://127.0.0.1:5000`** or **`http://localhost:5000`**.
 
 > **Demo Credentials:**
 > - **Username:** `demo`
