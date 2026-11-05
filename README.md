@@ -1,11 +1,7 @@
 # 🌿 LeafCare AI – Intelligent Plant Disease Detection System
 
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.1-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-MobileNetV2-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://tensorflow.org)
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org)
-[![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com)
-[![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+
 
 > **LeafCare AI** is a full-stack Computer Vision web application for automatic detection and classification of crop foliage diseases. Combining **OpenCV image preprocessing** and a **MobileNetV2 Deep Convolutional Neural Network**, it supports both file uploads and live camera streaming to diagnose 38 crop pathology conditions across 14 plant species with immediate organic and chemical remedy recommendations.
 
@@ -45,63 +41,9 @@
 
 ---
 
-## 🗂️ System Architecture
 
-```
-                                  [ User Interface ]
-                       (HTML5 + Bootstrap 5.3 + FontAwesome 6)
-                         /                               \
-               [ File Upload ]                    [ Live Webcam ]
-                         \                               /
-                          v                             v
-                   [ Flask REST Controller (app.py) ]
-                                    |
-                    +---------------+---------------+
-                    |                               |
-                    v                               v
-         [ OpenCV Preprocessing ]          [ User Session / Auth ]
-         - Decode & sanity check           - Registration & Login
-         - Blur / Sharpness score          - SQLite database
-         - Foliage ratio (HSV)
-                    |
-                    v
-       [ TensorFlow MobileNetV2 ]
-       - 224x224x3 Input Batch
-       - Convolutional Feature Extraction
-       - Softmax 38-class Probabilities
-                    |
-                    v
-       [ Botanical Diagnostic Engine ]
-       - Disease Info Profile Mapping
-       - Organic / Chemical Treatments
-       - Preventative Guidelines
-                    |
-                    v
-    [ Result Report & Dashboard Analytics ]
-```
 
----
 
-## 🌾 Supported Crops & Diseases (38 PlantVillage Classes)
-
-| Crop | Disease Conditions Covered |
-| :--- | :--- |
-| **Apple** | Apple Scab, Black Rot, Cedar Apple Rust, Healthy |
-| **Blueberry** | Healthy |
-| **Cherry** | Powdery Mildew, Healthy |
-| **Corn (Maize)** | Cercospora Gray Leaf Spot, Common Rust, Northern Leaf Blight, Healthy |
-| **Grape** | Black Rot, Esca (Black Measles), Leaf Blight (Isariopsis), Healthy |
-| **Orange** | Huanglongbing (Citrus Greening) |
-| **Peach** | Bacterial Spot, Healthy |
-| **Bell Pepper** | Bacterial Spot, Healthy |
-| **Potato** | Early Blight, Late Blight, Healthy |
-| **Raspberry** | Healthy |
-| **Soybean** | Healthy |
-| **Squash** | Powdery Mildew |
-| **Strawberry** | Leaf Scorch, Healthy |
-| **Tomato** | Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Spot, Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus, Healthy |
-
----
 
 ## 🚀 Quick Start (Local Setup)
 
@@ -152,78 +94,3 @@ The script automatically preserves class indices, compiles metrics, and outputs 
 
 ---
 
-## 🌐 Cloud Deployment (Render)
-
-This repository includes turnkey configuration for [Render](https://render.com):
-
-1. **Push to GitHub**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit of LeafCare AI"
-   git remote add origin https://github.com/your-username/LeafCare-AI.git
-   git push -u origin main
-   ```
-2. **Deploy on Render**:
-   - Go to [dashboard.render.com](https://dashboard.render.com) and click **New + > Web Service**.
-   - Connect your `LeafCare-AI` GitHub repository.
-   - Settings:
-     - **Environment:** `Python`
-     - **Build Command:** `pip install --upgrade pip && pip install -r requirements.txt`
-     - **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
-   - Click **Deploy Web Service**!
-
----
-
-## 🛠️ Project Structure
-
-```
-LeafCare-AI/
-├── app.py                      # Flask main entry point (routes, auth, prediction API)
-├── config.py                   # Central application configuration
-├── database.py                 # SQLite database models and queries
-├── Procfile                    # Render / Heroku process declaration
-├── render.yaml                 # Infrastructure as Code blueprint for Render
-├── runtime.txt                 # Python runtime version
-├── requirements.txt            # Production Python dependencies
-├── .gitignore                  # Git ignore rules
-├── README.md                   # Full documentation
-│
-├── model/
-│   ├── plant_disease_model.keras  # Trained MobileNetV2 neural network
-│   ├── class_indices.json      # 38 PlantVillage class mappings
-│   ├── disease_info.json       # Detailed botanical remedies & symptoms
-│   └── train_mobilenetv2.py    # Training & fine-tuning pipeline
-│
-├── utils/
-│   ├── image_processor.py      # OpenCV filtering, validation & normalization
-│   └── predictor.py            # Model inference, confidence scoring & top-5
-│
-├── static/
-│   ├── css/style.css           # Premium botanical green stylesheet
-│   ├── js/
-│   │   ├── scanner.js          # Webcam capture & drag-and-drop handler
-│   │   ├── dashboard.js        # Chart.js analytics engine
-│   │   └── main.js             # UI animations & flash auto-dismiss
-│   ├── images/sample_leaves/   # Demo leaf specimens (Tomato, Corn, Apple)
-│   └── uploads/                # Processed diagnostic uploads
-│
-└── templates/
-    ├── base.html               # Master layout with navigation and footer
-    ├── index.html              # Hero landing page & 1-click test showcase
-    ├── scanner.html            # AI Scanner (Upload + Live Webcam)
-    ├── result.html             # Diagnostic report & treatment guide
-    ├── dashboard.html          # Pathology statistics & charts
-    ├── history.html            # Searchable scan history archive
-    ├── login.html              # Authentication sign in
-    ├── register.html           # User registration
-    └── 404.html                # Custom error page
-```
-
----
-
-## 📜 License & Acknowledgments
-
-- **Dataset:** PlantVillage Dataset by David Hughes & Marcel Salathé.
-- **Neural Network:** MobileNetV2 by Google Research.
-- **License:** MIT License. Free for academic, educational, and commercial agricultural technology use.
