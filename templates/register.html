@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account – LeafCare AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      
+      <div class="text-center mb-4">
+        <div class="brand-badge mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.5rem;">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <h3 class="fw-extrabold text-dark">Join LeafCare AI</h3>
+        <p class="text-muted small">Register to save your plant pathology scans, view analytics, and monitor crop health.</p>
+      </div>
+
+      <div class="card card-botanical p-4 p-md-5 border-0 shadow-lg">
+        <form method="POST" action="{{ url_for('register') }}">
+          
+          <div class="mb-3">
+            <label for="username" class="form-label small fw-bold text-dark">Username</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
+              <input type="text" class="form-control border-start-0" id="username" name="username" placeholder="Choose a username" required autofocus>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label small fw-bold text-dark">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-envelope"></i></span>
+              <input type="email" class="form-control border-start-0" id="email" name="email" placeholder="name@farm.com" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label small fw-bold text-dark">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="At least 6 characters" minlength="6" required>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="confirm_password" class="form-label small fw-bold text-dark">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock-open"></i></span>
+              <input type="password" class="form-control border-start-0" id="confirm_password" name="confirm_password" placeholder="Repeat your password" minlength="6" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-botanical w-100 py-3 shadow">
+            <i class="fa-solid fa-user-plus me-2"></i> Create Free Account
+          </button>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+          <p class="text-muted small mb-0">
+            Already have an account? 
+            <a href="{{ url_for('login') }}" class="text-success fw-bold text-decoration-none">Sign In</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-code / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# SQLite databases
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# User uploads (keep folder via .gitkeep)
+static/uploads/*
+!static/uploads/.gitkeep

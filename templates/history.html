@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostic Scan History – LeafCare AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+      <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 rounded-pill mb-2">
+        <i class="fa-solid fa-clock-rotate-left me-1"></i> Scan Archives
+      </span>
+      <h2 class="fw-extrabold text-dark mb-0">Diagnostic History</h2>
+      <p class="text-muted small mb-0">Complete historical record of all plant leaf diagnoses stored in SQLite database.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('scanner') }}" class="btn btn-botanical shadow-sm">
+        <i class="fa-solid fa-camera-viewfinder me-1"></i> New Scan
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="card card-botanical p-3 mb-4 border-0">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input type="text" id="history-search" class="form-control border-start-0" placeholder="Filter by plant name, disease or class...">
+        </div>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-sm btn-outline-success active filter-btn" data-filter="all">All ({{ predictions|length }})</button>
+          <button type="button" class="btn btn-sm btn-outline-success filter-btn" data-filter="healthy">Healthy Only</button>
+          <button type="button" class="btn btn-sm btn-outline-danger filter-btn" data-filter="diseased">Diseased Only</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Items Card -->
+  <div class="card card-botanical border-0 p-4">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" id="history-table">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 70px;">Image</th>
+            <th scope="col">Plant</th>
+            <th scope="col">Condition / Diagnosis</th>
+            <th scope="col">Confidence</th>
+            <th scope="col">Date & Time</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in predictions %}
+            <tr class="history-row" data-status="{% if r.is_healthy %}healthy{% else %}diseased{% endif %}">
+              <td>
+                <a href="{{ url_for('result_view', pred_id=r.id) }}">
+                  <img src="{{ url_for('static', filename='uploads/' ~ r.image_filename) }}" 
+                       alt="Leaf" class="rounded-3 object-fit-cover shadow-sm" style="width: 52px; height: 52px;">
+                </a>
+              </td>
+              <td>
+                <span class="fw-bold text-dark d-block search-plant">{{ r.plant_name }}</span>
+                <span class="text-muted small" style="font-size: 0.75rem;">ID: #{{ r.id }}</span>
+              </td>
+              <td>
+                {% if r.is_healthy %}
+                  <span class="badge badge-healthy mb-1"><i class="fa-solid fa-circle-check me-1"></i> Healthy</span>
+                {% else %}
+                  <span class="badge badge-diseased mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ r.disease_name }}</span>
+                {% endif %}
+                <span class="d-block text-muted small search-class" style="font-size: 0.75rem;">{{ r.raw_class }}</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="confidence-meter flex-grow-1" style="width: 80px;">
+                    <div class="h-100 {% if r.is_healthy %}confidence-fill-healthy{% else %}confidence-fill-danger{% endif %}" 
+                         style="width: {{ (r.confidence * 100) | round }}%;"></div>
+                  </div>
+                  <strong class="small">{{ (r.confidence * 100) | round(1) }}%</strong>
+                </div>
+              </td>
+              <td class="text-muted small">
+                {{ r.created_at }}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{{ url_for('result_view', pred_id=r.id) }}" class="btn btn-sm btn-botanical-outline" title="View Full Report">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                  <form action="{{ url_for('delete_pred', pred_id=r.id) }}" method="POST" onsubmit="return confirm('Delete this diagnostic record?');" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Scan">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                <div class="scanner-icon-bubble mb-2" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                  <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h5 class="fw-bold">No History Found</h5>
+                <p class="small mb-3">You haven't scanned any leaves yet. Try your first diagnostic scan now!</p>
+                <a href="{{ url_for('scanner') }}" class="btn btn-botanical btn-sm px-3">
+                  <i class="fa-solid fa-camera me-1"></i> Scan Now
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Instant search & filter for history table
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('history-search');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const rows = document.querySelectorAll('.history-row');
+
+    let currentFilter = 'all';
+
+    function applyFilters() {
+      const term = (searchInput?.value || '').toLowerCase().trim();
+
+      rows.forEach(row => {
+        const plant = row.querySelector('.search-plant')?.innerText.toLowerCase() || '';
+        const rawClass = row.querySelector('.search-class')?.innerText.toLowerCase() || '';
+        const status = row.getAttribute('data-status');
+
+        const matchesTerm = !term || plant.includes(term) || rawClass.includes(term);
+        const matchesFilter = (currentFilter === 'all') || (status === currentFilter);
+
+        if (matchesTerm && matchesFilter) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilters);
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        applyFilters();
+      });
+    });
+  });
+</script>
+{% endblock %}

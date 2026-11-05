@@ -1,0 +1,297 @@
+/* LeafCare AI - Premium Botanical Stylesheet */
+
+:root {
+  --primary-dark: #081c15;
+  --forest-900: #1b4332;
+  --forest-800: #2d6a4f;
+  --forest-700: #40916c;
+  --forest-500: #52b788;
+  --forest-300: #74c69d;
+  --forest-200: #95d5b2;
+  --forest-100: #d8f3dc;
+  --forest-50: #f4fbf7;
+  
+  --accent-gold: #e9c46a;
+  --danger-crimson: #e63946;
+  --warning-amber: #f4a261;
+  --info-teal: #2a9d8f;
+
+  --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #eaf7f0 50%, #f9fdfa 100%);
+  --card-shadow: 0 10px 30px rgba(27, 67, 50, 0.08);
+  --card-shadow-hover: 0 20px 40px rgba(27, 67, 50, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(82, 183, 136, 0.2);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-gradient);
+  color: #2b3a33;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botanical Navbar */
+.navbar-botanical {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--forest-100);
+  box-shadow: 0 4px 20px rgba(45, 106, 79, 0.05);
+  transition: all 0.3s ease;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--forest-800), var(--forest-500));
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+}
+
+.brand-title {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-size: 1.35rem;
+  color: var(--forest-900);
+}
+
+.brand-title .ai-tag {
+  color: var(--forest-500);
+  font-weight: 900;
+}
+
+.nav-link {
+  font-weight: 600;
+  color: #3f5e50 !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--forest-800) !important;
+  background-color: var(--forest-100);
+}
+
+/* Botanical Buttons */
+.btn-botanical {
+  background: linear-gradient(135deg, var(--forest-800) 0%, var(--forest-700) 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(45, 106, 79, 0.3);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-botanical:hover {
+  background: linear-gradient(135deg, var(--forest-900) 0%, var(--forest-800) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 106, 79, 0.4);
+}
+
+.btn-botanical-outline {
+  border: 2px solid var(--forest-700);
+  color: var(--forest-800) !important;
+  background: transparent;
+  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-botanical-outline:hover {
+  background: var(--forest-100);
+  border-color: var(--forest-800);
+  transform: translateY(-2px);
+}
+
+/* Modern Botanical Cards */
+.card-botanical {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--forest-100);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.card-botanical:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.card-header-botanical {
+  background: linear-gradient(135deg, var(--forest-50), #ffffff);
+  border-bottom: 1px solid var(--forest-100);
+  padding: 1.25rem 1.5rem;
+  font-weight: 700;
+  color: var(--forest-900);
+}
+
+/* Scanner Container */
+.scanner-dropzone {
+  border: 2px dashed var(--forest-300);
+  border-radius: 20px;
+  background: rgba(244, 251, 247, 0.6);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.scanner-dropzone:hover, .scanner-dropzone.dragover {
+  border-color: var(--forest-700);
+  background: var(--forest-100);
+  transform: scale(1.01);
+}
+
+.scanner-icon-bubble {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest-100), #ffffff);
+  border: 2px solid var(--forest-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: var(--forest-800);
+  box-shadow: 0 8px 24px rgba(45, 106, 79, 0.15);
+}
+
+/* Live Camera Feed */
+.camera-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.camera-viewport video {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: scaleX(-1); /* mirror */
+}
+
+.camera-target-frame {
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  right: 15%;
+  bottom: 15%;
+  border: 2px dashed rgba(82, 183, 136, 0.8);
+  border-radius: 14px;
+  pointer-events: none;
+  animation: pulse-frame 2.5s infinite;
+}
+
+@keyframes pulse-frame {
+  0% { box-shadow: 0 0 0 0 rgba(82, 183, 136, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(82, 183, 136, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(82, 183, 136, 0); }
+}
+
+/* Scanning Laser Line Animation */
+.scanning-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #52b788, #d8f3dc, #52b788, transparent);
+  box-shadow: 0 0 12px #52b788;
+  animation: scan-move 2s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes scan-move {
+  0% { top: 5%; }
+  100% { top: 92%; }
+}
+
+/* Confidence Meters */
+.confidence-meter {
+  height: 12px;
+  border-radius: 6px;
+  background: #e9ecef;
+  overflow: hidden;
+}
+
+.confidence-fill-healthy {
+  background: linear-gradient(90deg, var(--forest-500), #2dc653);
+}
+
+.confidence-fill-danger {
+  background: linear-gradient(90deg, #f4a261, #e63946);
+}
+
+/* Status Badges */
+.badge-healthy {
+  background-color: #d8f3dc;
+  color: #1b4332;
+  font-weight: 700;
+  border: 1px solid #95d5b2;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
+}
+
+.badge-diseased {
+  background-color: #ffe3e3;
+  color: #c92a2a;
+  font-weight: 700;
+  border: 1px solid #ffc9c9;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
+}
+
+/* Stat Cards */
+.stat-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid var(--forest-100);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.stat-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+}
+
+/* Botanical Footer */
+.footer-botanical {
+  margin-top: auto;
+  background: #ffffff;
+  border-top: 1px solid var(--forest-100);
+  padding: 2rem 0;
+  color: #557063;
+  font-size: 0.95rem;
+}

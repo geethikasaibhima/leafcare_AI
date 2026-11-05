@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics & Statistics Dashboard – LeafCare AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+      <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 rounded-pill mb-2">
+        <i class="fa-solid fa-chart-simple me-1"></i> Diagnostic Intelligence
+      </span>
+      <h2 class="fw-extrabold text-dark mb-0">Pathology Dashboard</h2>
+      <p class="text-muted small mb-0">Overview of crop disease scans, healthy ratios, and diagnostic trends.</p>
+    </div>
+    <a href="{{ url_for('scanner') }}" class="btn btn-botanical shadow-sm">
+      <i class="fa-solid fa-plus me-1"></i> New Diagnosis
+    </a>
+  </div>
+
+  <!-- Stat Counter Cards -->
+  <div class="row g-4 mb-4">
+    
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+          <i class="fa-solid fa-qrcode"></i>
+        </div>
+        <div>
+          <h6 class="text-muted small mb-1 fw-bold text-uppercase">Total Scans</h6>
+          <h3 class="fw-extrabold text-dark mb-0" id="total-scans-val">{{ stats.total_scans }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-success bg-opacity-10 text-success">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <div>
+          <h6 class="text-muted small mb-1 fw-bold text-uppercase">Healthy Crops</h6>
+          <h3 class="fw-extrabold text-success mb-0" id="healthy-scans-val">{{ stats.healthy_scans }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h6 class="text-muted small mb-1 fw-bold text-uppercase">Diseased Leaves</h6>
+          <h3 class="fw-extrabold text-danger mb-0" id="diseased-scans-val">{{ stats.diseased_scans }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div>
+          <h6 class="text-muted small mb-1 fw-bold text-uppercase">Avg Confidence</h6>
+          <h3 class="fw-extrabold text-dark mb-0">{{ stats.avg_confidence }}%</h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive Charts Row -->
+  <div class="row g-4 mb-4">
+    
+    <!-- Doughnut Chart: Health Breakdown -->
+    <div class="col-lg-5">
+      <div class="card card-botanical h-100 p-4 border-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 text-dark">Crop Health Distribution</h5>
+          <span class="badge bg-light text-muted border">Ratio</span>
+        </div>
+        <div class="position-relative" style="height: 260px;">
+          <canvas id="healthRatioChart"></canvas>
+        </div>
+        <div class="d-flex justify-content-around text-center mt-3 pt-2 border-top">
+          <div>
+            <span class="text-muted small d-block">Healthy</span>
+            <strong class="text-success">{{ stats.healthy_scans }}</strong>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Diseased</span>
+            <strong class="text-danger">{{ stats.diseased_scans }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bar Chart: Crop Species Distribution -->
+    <div class="col-lg-7">
+      <div class="card card-botanical h-100 p-4 border-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 text-dark">Crops Analyzed</h5>
+          <span class="badge bg-light text-muted border">By Plant</span>
+        </div>
+        <div class="position-relative" style="height: 280px;">
+          <canvas id="cropsBarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recent Scans Activity Table -->
+  <div class="card card-botanical border-0 p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-0 text-dark">Recent Diagnostics</h5>
+        <small class="text-muted">Latest plant health investigations</small>
+      </div>
+      <a href="{{ url_for('history') }}" class="btn btn-sm btn-botanical-outline">
+        View All History <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Specimen</th>
+            <th scope="col">Plant</th>
+            <th scope="col">Diagnosis</th>
+            <th scope="col">Confidence</th>
+            <th scope="col">Timestamp</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in stats.recent_scans %}
+            <tr>
+              <td>
+                <img src="{{ url_for('static', filename='uploads/' ~ r.image_filename) }}" 
+                     alt="Leaf" class="rounded-2 object-fit-cover shadow-sm" style="width: 44px; height: 44px;">
+              </td>
+              <td class="fw-bold text-dark">{{ r.plant_name }}</td>
+              <td>
+                {% if r.is_healthy %}
+                  <span class="badge badge-healthy"><i class="fa-solid fa-circle-check me-1"></i> Healthy</span>
+                {% else %}
+                  <span class="badge badge-diseased"><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ r.disease_name }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="confidence-meter flex-grow-1" style="width: 60px;">
+                    <div class="h-100 {% if r.is_healthy %}confidence-fill-healthy{% else %}confidence-fill-danger{% endif %}" 
+                         style="width: {{ (r.confidence * 100) | round }}%;"></div>
+                  </div>
+                  <small class="fw-bold">{{ (r.confidence * 100) | round(1) }}%</small>
+                </div>
+              </td>
+              <td class="text-muted small">{{ r.created_at }}</td>
+              <td class="text-end">
+                <a href="{{ url_for('result_view', pred_id=r.id) }}" class="btn btn-sm btn-botanical-outline">
+                  <i class="fa-solid fa-eye me-1"></i> Details
+                </a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                No diagnostic scans recorded yet. <a href="{{ url_for('scanner') }}">Run your first scan</a>!
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
